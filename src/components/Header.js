@@ -1,8 +1,16 @@
 import Image from 'next/image';
 import { MenuIcon, SearchIcon } from '@heroicons/react/solid'
 import { ShoppingCartIcon } from '@heroicons/react/outline'
+import { useSession, signIn, signOut } from "next-auth/client"
+import { useRouter } from 'next/router'
+import { useSelector } from 'react-redux';
+import { selectItems } from '../slices/basketSlice';
 
 const Header = () => {
+    const [session] = useSession();
+    const router = useRouter()
+    const items = useSelector(selectItems);
+
     return (
         <header>
             {/* Top section */}
@@ -10,6 +18,7 @@ const Header = () => {
                 {/* Logo */}
                 <div className="mt-2 flex items-center flex-grow sm:flex-grow-0">
                     <Image
+                        onClick={()=>router.push('/')}
                         width={150}
                         height={40}
                         src='https://links.papareact.com/f90'
@@ -26,16 +35,18 @@ const Header = () => {
                 </div>
                 {/* Right section */}
                 <div className='text-white mx-2 flex items-center space-x-4 text-xs whitespace-nowrap'>
-                    <div className='link'>
-                        <p>Hello,Taiwo Tolulope</p>
+                    <div onClick={session ? signOut : signIn} className='link'>
+                        <p>{session ? `Hello, ${session.user.name}` : 'Sign In'}</p>
                         <p className='font-extrabold md:text-sm'>Accounts & Lists</p>
                     </div>
                     <div className='link'>
                         <p>Returns</p>
                         <p className='font-extrabold md:text-sm'>& Orders</p>
                     </div>
-                    <div className='relative flex items-center link'>
-                        <p className='absolute top-0 right-0 md:right-11 bg-yellow-400 w-4 h-4 text-center rounded-full'>0</p>
+                    <div onClick={()=>router.push('/checkout')} className='relative flex items-center link'>
+                        <p className='absolute top-0 right-0 md:right-11 bg-yellow-400 w-4 h-4 text-center rounded-full'>
+                            {items.length}
+                        </p>
                         <ShoppingCartIcon className='h-10'/>
                         <p className='hidden md:flex font-extrabold md:text-sm mt-2'>Baskets</p>
                     </div>
