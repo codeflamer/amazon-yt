@@ -40,8 +40,8 @@ const Product = ({id,item,description,price,title,category,image}) => {
             <h4 className="my-3 font-extrabold md:text-lg">{title}</h4>
             <div className="flex space-x-1">
             {
-                Array(rating).fill().map(()=>(
-                    <StarIcon className='h-5 text-yellow-500'/>
+                Array(rating).fill().map((_i)=>(
+                    <StarIcon key={_i} className='h-5 text-yellow-500'/>
                 ))
             }
             </div>

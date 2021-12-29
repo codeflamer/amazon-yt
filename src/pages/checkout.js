@@ -6,13 +6,34 @@ import { selectItems, selectTotal } from "../slices/basketSlice";
 import CheckoutProduct from "../components/CheckoutProduct";
 import { useSession } from "next-auth/client";
 import Currency from 'react-currency-formatter';
+import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
 
+const stripePromise = loadStripe(process.env.stripe_public_key);
 
 const Checkout = () => {
     const items = useSelector(selectItems);
     const total = useSelector(selectTotal);
     const [session] = useSession();
     // console.log(!session)
+    
+    const checkoutToStripe = async() =>{
+        const stripe = await stripePromise;
+
+        const checkoutSession = await axios.post('/api/create-checkout-session', {
+            items:items,
+            email:session.user.email
+          })
+
+        const result = await stripe.redirectToCheckout({
+            sessionId:checkoutSession.data.id
+        })
+
+        if (result.error){
+            alert(result.error.message)
+        }
+    }
+
     return (
         <div className="bg-gray-100">
             <Head>
@@ -53,23 +74,24 @@ const Checkout = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-col bg-white p-10 shadow-md">
+                
                     {/* right Section */}
                     {items.length > 0 && (
-                        <>
+                        <div className="flex flex-col bg-white p-10 shadow-md">
                             <h2 className='whitespace-nowrap'>
                                 SubTotal({items.length} items):{" "} 
                                 <span className="font-bold">
                                     <Currency quantity={total} currency='RUB'/>
                                 </span>
                             </h2>
-                            <button disabled={!session} 
+                            <button 
+                                onClick={checkoutToStripe}
+                                disabled={!session} 
                                 className={`button mt-2 px-2 ${!session && 'text-gray-300 from-gray-300 to-gray-500 border-gray-300 cursor-not-allowed'}`}>
                                 {session ? 'Proceed To Checkout' : 'signIn'}
                             </button>
-                        </>
+                        </div>
                     )}
-                </div>
             </main>
         </div>
     )

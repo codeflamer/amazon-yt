@@ -39,7 +39,7 @@ const Header = () => {
                         <p>{session ? `Hello, ${session.user.name}` : 'Sign In'}</p>
                         <p className='font-extrabold md:text-sm'>Accounts & Lists</p>
                     </div>
-                    <div className='link'>
+                    <div onClick={()=>router.push('/orders')} className='link'>
                         <p>Returns</p>
                         <p className='font-extrabold md:text-sm'>& Orders</p>
                     </div>
@@ -55,7 +55,7 @@ const Header = () => {
 
             {/* Bottom section */}
             <div className="bg-amazon_blue-light text-white flex p-2 text-sm space-x-2 items-center pl-6">
-                <p class='link flex items-center'>
+                <p className='link flex items-center'>
                     <MenuIcon className='h-6 mr-1'/>
                     All
                 </p>
